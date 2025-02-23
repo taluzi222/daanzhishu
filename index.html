@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答案之书</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Segoe UI', '微软雅黑', sans-serif;
+            color: #2d3250;
+        }
+
+        .container {
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            margin: 30px 0;
+            color: #2d3250;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+        }
+
+        .prompt {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin: 30px 0;
+            color: #4a5568;
+            min-height: 120px;
+            letter-spacing: 0.5px;
+        }
+
+        #answerBox {
+            min-height: 150px;
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.5s ease;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 14px 40px;
+            color: white;
+            font-size: 1.05rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            button { min-width: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📖 答案之书 ✨</h1>
+        <div class="prompt" id="mainPrompt">
+            在选择的十字路口徘徊时🌙<br>
+            让直觉成为你的指南针🧭<br>
+            双手触碰屏幕的瞬间✨<br>
+            宇宙会给你温柔的回应💫
+        </div>
+        <div id="answerBox"></div>
+        <div class="button-group">
+            <button id="mainButton" onclick="handleMainAction()">🌠 获取今日答案</button>
+            <button class="secondary" onclick="resetInterface()" style="display:none;">🔄 重新提问</button>
+        </div>
+    </div>
+
+<script>
+const answers = [
+    "是的",
+    "不是现在",
+    "等待更清晰的信号",
+    "重新定义你的问题",
+    "跟随直觉",
+    "需要妥协",
+    "专注第一步",
+    "会有意外助力",
+    "放下执念",
+    "时机未到",
+    "比想象中更快",
+    "寻找中间道路",
+    "信任过程",
+    "答案在身边",
+    "先改变自己",
+    "需要冒险",
+    "保持沉默",
+    "会有连锁反应",
+    "不值得纠结",
+    "主动创造机会",
+    "专注自身成长",
+    "接受不完美",
+    "寻找第三种可能",
+    "外界阻力很大",
+    "答案在问题里",
+    "需要专业帮助",
+    "先满足基本需求",
+    "观察而非行动",
+    "会有贵人出现",
+    "准备Plan B",
+    "走出舒适区",
+    "让时间发酵答案",
+    "像河流一样顺势而为",
+    "暂时搁置争议",
+    "用行动验证猜想",
+    "先完成再完美",
+    "跨越心理障碍",
+    "以退为进",
+    "主动制造转机",
+    "打破常规路径",
+    "心理状态",
+    "接纳不确定性",
+    "停止过度分析",
+    "允许情绪流动",
+    "清空心智噪音",
+    "保持弹性思维",
+    "警惕自我设限",
+    "与焦虑共处",
+    "三天后再决定",
+    "黎明前最黑暗",
+    "加速不如等待",
+    "此刻即是答案",
+    "先让子弹飞",
+    "别透支未来",
+    "倾听弦外之音",
+    "建立安全边界",
+    "远离能量黑洞",
+    "主动释放信号",
+    "警惕情感绑架",
+    "沉默也是回应",
+    "降低解释成本",
+    "允许他人选择",
+    "用距离测真心",
+    "选择痛苦更小的",
+    "优先止损方案",
+    "最小成本试错",
+    "放弃最优解思维",
+    "警惕沉没成本",
+    "建立决策清单",
+    "想象最坏结果",
+    "接受灰度答案",
+    "爱是允许自由",
+    "警惕补偿心理",
+    "先完整再完美",
+    "建立不可替代性",
+    "警惕虚假忙碌",
+    "先踏出第一步",
+    "别急着做决定",
+    "试试反着来",
+    "先睡一觉再说",
+    "和朋友聊聊",
+    "换个方式做",
+    "别怕丢脸",
+    "先解决小问题",
+    "停下来歇会儿",
+    "直接去问TA",
+    "别想太复杂",
+    "顺其自然吧",
+    "别和自己较劲",
+    "你已经很棒了",
+    "别管别人咋说",
+    "先笑一笑再说",
+    "别太贪心",
+    "放过自己吧",
+    "吃顿好的再说",
+    "别钻牛角尖",
+    "三天后不一样",
+    "下个月再看看",
+    "春天会有答案",
+    "等生日过后",
+    "别急着要结果",
+    "先等一周",
+    "时机还没到",
+    "明天会更好",
+    "周五有转机",
+    "别催自己",
+    "TA会主动找你",
+    "别猜对方心思",
+    "装傻比较好",
+    "先请客吃饭",
+    "别翻旧账",
+    "送个小礼物",
+    "保持点距离",
+    "别急着原谅",
+    "直接说真心话",
+    "别当老好人",
+    "抛硬币决定",
+    "选更开心的",
+    "听妈妈的话",
+    "别后悔就行",
+    "选便宜的那个",
+    "跟着感觉走",
+    "选让你笑的",
+    "哪个轻松选哪个",
+    "抓阄试试看",
+    "选不费劲的",
+    "先完成再完美",
+    "明天再做吧",
+    "先喝杯咖啡",
+    "列个清单再说",
+    "找同事帮忙",
+    "别怕被批评",
+    "偷偷偷个懒",
+    "先百度一下",
+    "装没看见吧",
+    "直接说不会",
+    "别主动联系",
+    "发条朋友圈试探",
+    "打扮漂亮点",
+    "别查手机",
+    "换个发型试试",
+    "假装不在意",
+    "写封信别寄",
+    "去运动发泄",
+    "删掉聊天记录",
+    "找闺蜜吐槽",
+    "钱能解决的事",
+    "先清空购物车",
+    "别凑热闹",
+    "出门带伞",
+    "多带充电宝",
+    "别借给别人钱",
+    "囤点零食",
+    "关掉手机",
+    "养盆绿植",
+    "定期断舍离",
+    "看到彩虹就行",
+    "生日愿望会实现",
+    "转发锦鲤有用",
+    "护身符带着",
+    "拜拜财神爷",
+    "你说了算",
+    "老天爷知道",
+    "答案在风里",
+    "去问Siri吧",
+    "镜子知道答案",
+    "问你家猫",
+    "摇骰子决定",
+    "看天气预报",
+    "答案被狗吃了",
+    "别问我啦",
+    "喝杯水冷静下",
+    "月亮会告诉你",
+    "数到十再决定",
+    "猫咪知道答案",
+    "周末会有转机",
+    "假装没看见",
+    "买根冰淇淋",
+    "星星在眨眼",
+    "把问题揉成纸团",
+    "明天早餐时想",
+    "翻翻旧照片",
+    "对着镜子笑",
+    "淋场雨清醒",
+    "喂楼下流浪猫",
+    "今晚早点睡",
+    "把烦恼折成飞机",
+    "等花开的时候",
+    "你早就知道答案"
+];
+
+let lastAnswers = [];
+const MAX_HISTORY = 5;
+
+function getRandomAnswer() {
+    let newAnswer;
+    do {
+        newAnswer = answers[Math.floor(Math.random() * answers.length)];
+    } while (lastAnswers.includes(newAnswer))
+    
+    lastAnswers.push(newAnswer);
+    if(lastAnswers.length > MAX_HISTORY) lastAnswers.shift();
+    return newAnswer;
+}
+
+function handleMainAction() {
+    const answerBox = document.getElementById('answerBox');
+    const mainButton = document.getElementById('mainButton');
+    const secondaryButton = document.querySelector('.secondary');
+    
+    if(answerBox.style.opacity === '1') {
+        answerBox.style.opacity = 0;
+        setTimeout(() => {
+            answerBox.textContent = getRandomAnswer();
+            answerBox.style.opacity = 1;
+        }, 300);
+    } else {
+        answerBox.textContent = getRandomAnswer();
+        answerBox.style.opacity = 1;
+        mainButton.textContent = '✨ 再获新启示';
+        secondaryButton.style.display = 'inline-block';
+    }
+}
+
+function resetInterface() {
+    const answerBox = document.getElementById('answerBox');
+    const mainButton = document.getElementById('mainButton');
+    const secondaryButton = document.querySelector('.secondary');
+    
+    answerBox.style.opacity = 0;
+    mainButton.textContent = '🌠 获取今日答案';
+    secondaryButton.style.display = 'none';
+    
+    setTimeout(() => {
+        answerBox.textContent = '';
+    }, 300);
+}
+</script>
+</body>
+</html>
